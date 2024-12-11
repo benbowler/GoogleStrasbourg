@@ -106,7 +106,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 body: JSON.stringify({
                     contents: [{
                         parts: [{
-                            text: `Extract 2-3 key themes or facts about the user from this text. Return only bullet points, each on a new line, starting with "•": ${text}`
+                            text: `Extract 2-3 key themes or facts about the user from this conversation. Return only bullet points, each on a new line, starting with "•". If no clear themes are present, extract potential preferences or interests. Here's the conversation:\n\n${text}`
                         }]
                     }]
                 })
@@ -129,6 +129,9 @@ document.addEventListener('DOMContentLoaded', () => {
         const themesList = document.getElementById('themes-list');
         const themes = themesText.split('\n').filter(theme => theme.trim().startsWith('•'));
         
+        // Log for debugging
+        console.log('Extracted themes:', themes);
+        
         themes.forEach(theme => {
             const themeItem = document.createElement('li');
             themeItem.className = 'theme-item';
@@ -139,14 +142,21 @@ document.addEventListener('DOMContentLoaded', () => {
 
     async function handleMessage(message) {
         if (message.trim()) {
+            // If we're in the welcome screen, we need to copy the initial AI message
+            if (!welcomeScreen.classList.contains('hidden')) {
+                const initialAIMessage = document.querySelector('#welcome-screen .ai-message').textContent;
+                addMessage(initialAIMessage, false);
+            }
+
             addMessage(message, true);
             addTypingIndicator();
             const aiResponse = await getAIResponse(message);
             removeTypingIndicator();
             addMessage(aiResponse, false);
 
-            // Extract and add themes after each AI response
-            const themes = await extractThemes(aiResponse);
+            // Extract and add themes from both the user's message and AI's response
+            const combinedText = `User: ${message}\nAI: ${aiResponse}`;
+            const themes = await extractThemes(combinedText);
             addThemesToSidebar(themes);
         }
     }
