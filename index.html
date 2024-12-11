@@ -9,9 +9,20 @@
 <body>
     <div class="container">
         <h1>Welcome to the Google Strasbourg Blogmaker</h1>
-        <div class="input-container">
-            <input type="text" placeholder="Enter your text here..." class="text-input">
+        <div id="welcome-screen">
+            <div class="input-container">
+                <input type="text" placeholder="Enter your text here..." class="text-input" id="initial-input">
+                <button id="submit-btn">Submit</button>
+            </div>
+        </div>
+        <div id="chat-interface" class="hidden">
+            <div class="chat-container">
+                <div class="messages" id="messages">
+                    <!-- Messages will be inserted here -->
+                </div>
+            </div>
         </div>
     </div>
+    <script src="script.js"></script>
 </body>
 </html>
