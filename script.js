@@ -93,6 +93,47 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    async function extractThemes(text) {
+        try {
+            const response = await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=' + apiKeyInput.value.trim(), {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    contents: [{
+                        parts: [{
+                            text: `Extract 2-3 key themes or facts about the user from this text. Return only bullet points, each on a new line, starting with "•": ${text}`
+                        }]
+                    }]
+                })
+            });
+
+            const data = await response.json();
+            if (data.candidates && data.candidates[0].content.parts[0].text) {
+                return data.candidates[0].content.parts[0].text;
+            }
+            return null;
+        } catch (error) {
+            console.error('Error extracting themes:', error);
+            return null;
+        }
+    }
+
+    function addThemesToSidebar(themesText) {
+        if (!themesText) return;
+        
+        const themesList = document.getElementById('themes-list');
+        const themes = themesText.split('\n').filter(theme => theme.trim().startsWith('•'));
+        
+        themes.forEach(theme => {
+            const themeItem = document.createElement('li');
+            themeItem.className = 'theme-item';
+            themeItem.textContent = theme.trim();
+            themesList.appendChild(themeItem);
+        });
+    }
+
     async function handleMessage(message) {
         if (message.trim()) {
             addMessage(message, true);
@@ -100,6 +141,10 @@ document.addEventListener('DOMContentLoaded', () => {
             const aiResponse = await getAIResponse(message);
             removeTypingIndicator();
             addMessage(aiResponse, false);
+
+            // Extract and add themes after each AI response
+            const themes = await extractThemes(aiResponse);
+            addThemesToSidebar(themes);
         }
     }
 
