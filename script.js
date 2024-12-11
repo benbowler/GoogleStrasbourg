@@ -7,10 +7,37 @@ document.addEventListener('DOMContentLoaded', () => {
     const chatInput = document.getElementById('chat-input');
     const messagesContainer = document.getElementById('messages');
     const titleElement = document.querySelector('h1');
+    const apiKeyInput = document.getElementById('api-key-input');
+    const saveApiKeyBtn = document.getElementById('save-api-key');
+    const apiStatus = document.getElementById('api-status');
+
+    // Check for saved API key
+    const savedApiKey = localStorage.getItem('gemini_api_key');
+    if (savedApiKey) {
+        apiKeyInput.value = savedApiKey;
+        apiStatus.textContent = 'API Key loaded';
+    }
+
+    // Save API key to localStorage
+    saveApiKeyBtn.addEventListener('click', () => {
+        const apiKey = apiKeyInput.value.trim();
+        if (apiKey) {
+            localStorage.setItem('gemini_api_key', apiKey);
+            apiStatus.textContent = 'API Key saved';
+            setTimeout(() => {
+                apiStatus.textContent = '';
+            }, 2000);
+        }
+    });
 
     async function getAIResponse(userMessage) {
+        const apiKey = apiKeyInput.value.trim();
+        if (!apiKey) {
+            return 'Please enter a valid API key first.';
+        }
+
         try {
-            const response = await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=' + GEMINI_API_KEY, {
+            const response = await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=' + apiKey, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -26,7 +53,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const data = await response.json();
             
-            // Extract the response text from Gemini's response structure
+            if (data.error) {
+                throw new Error(data.error.message || 'API Error');
+            }
+
             if (data.candidates && data.candidates[0].content.parts[0].text) {
                 return data.candidates[0].content.parts[0].text;
             } else {
@@ -34,7 +64,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         } catch (error) {
             console.error('Error:', error);
-            return 'Sorry, I encountered an error while processing your message.';
+            return `Error: ${error.message || 'An error occurred while processing your message.'}`;
         }
     }
 
