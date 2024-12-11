@@ -142,12 +142,18 @@ document.addEventListener('DOMContentLoaded', () => {
 
     async function handleMessage(message) {
         if (message.trim()) {
-            // If we're in the welcome screen, we need to copy the initial AI message
+            // If we're in the welcome screen, handle the transition first
             if (!welcomeScreen.classList.contains('hidden')) {
+                welcomeScreen.classList.add('hidden');
+                chatInterface.classList.remove('hidden');
+                titleElement.textContent = "Google Strasbourg WP Theme-Chooser";
+                
+                // Add the initial AI message to the chat interface first
                 const initialAIMessage = document.querySelector('#welcome-screen .ai-message').textContent;
                 addMessage(initialAIMessage, false);
             }
 
+            // Then handle the new message
             addMessage(message, true);
             addTypingIndicator();
             const aiResponse = await getAIResponse(message);
@@ -164,9 +170,6 @@ document.addEventListener('DOMContentLoaded', () => {
     submitBtn.addEventListener('click', async () => {
         const message = initialInput.value.trim();
         if (message) {
-            welcomeScreen.classList.add('hidden');
-            chatInterface.classList.remove('hidden');
-            titleElement.textContent = "Google Strasbourg Blogmaker";
             await handleMessage(message);
             initialInput.value = '';
         }
