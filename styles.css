@@ -11,9 +11,29 @@ body {
 
 .container {
     text-align: center;
+    padding: 2rem;
 }
 
 h1 {
     color: #333;
-    font-size: 3rem;
+    font-size: 2rem;
+    margin-bottom: 2rem;
+}
+
+.input-container {
+    margin-top: 2rem;
+}
+
+.text-input {
+    width: 300px;
+    padding: 12px;
+    font-size: 1rem;
+    border: 2px solid #ddd;
+    border-radius: 4px;
+    outline: none;
+    transition: border-color 0.3s ease;
+}
+
+.text-input:focus {
+    border-color: #4285f4;
 } 
