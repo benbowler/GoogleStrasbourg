@@ -36,6 +36,9 @@ document.addEventListener('DOMContentLoaded', () => {
             return 'Please enter a valid API key first.';
         }
 
+        const promptPrefix = "You are tasked with helping a user choose a WordPress theme for their blog. Please ask only one question at a time. The user has sent the following message: ";
+        const fullPrompt = promptPrefix + userMessage;
+
         try {
             const response = await fetch('https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=' + apiKey, {
                 method: 'POST',
@@ -45,7 +48,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 body: JSON.stringify({
                     contents: [{
                         parts: [{
-                            text: userMessage
+                            text: fullPrompt
                         }]
                     }]
                 })
