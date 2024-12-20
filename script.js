@@ -36,7 +36,7 @@ document.addEventListener('DOMContentLoaded', () => {
             return 'Please enter a valid API key first.';
         }
 
-        const promptPrefix = "You are tasked with helping a user choose a WordPress theme for their blog. Please ask only one question at a time. The user has sent the following message: ";
+        const promptPrefix = "You are tasked with helping a user choose a WordPress theme for their website. Please ask only one question at a time. The user has sent the following message: ";
         const fullPrompt = promptPrefix + userMessage;
 
         try {
